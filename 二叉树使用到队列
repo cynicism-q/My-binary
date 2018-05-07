@@ -1,0 +1,179 @@
+//编译环境 VS2008
+
+Queue.h
+
+#pragma once
+
+typedef char BTDataType;
+
+typedef struct BTNode
+{
+	struct BTNode * _pLeft;
+	struct BTNode * _pRight;
+	BTDataType _data;
+}BTNode,*pBTNode;
+
+typedef BTNode* DataType;
+typedef struct Node
+{
+	struct Node* _Pnext;
+	DataType _data;            //现在这里的_data存放的是二叉树节点指针，因为节点太大所以放指针
+}Node,*pNode;
+
+typedef struct Queue
+{
+	 pNode _pHead;
+	 pNode _pTail;
+}Queue;
+
+
+//初始化
+void InitQueue(Queue * q);
+
+//队列尾插
+void QueuePush(Queue *q,DataType data);
+
+//队列头删
+void QueuePop(Queue *q);
+
+//创建一个结点
+pNode BuyNode(DataType data);
+
+//队列是否为空
+int QueueEmpty(Queue *q);
+
+//队列的大小
+int QueueSize(Queue *q);
+
+//队头元素
+DataType Queuefront(Queue *q);
+
+//队尾元素
+DataType Queueback(Queue *q);
+
+//销毁的队列
+void QueueDestroy(Queue *q);
+
+
+
+
+Queue.c
+
+#define _CRT_SECURE_NO_WARNINGS 1
+
+#include "Queue.h"
+#include <stdio.h>
+#include <assert.h>
+#include <malloc.h>
+
+//初始化
+void InitQueue(Queue* q)
+{
+	assert(q);
+	q->_pHead = NULL;
+	q->_pTail = NULL;
+}
+
+//队尾进元素
+void QueuePush(Queue* q,DataType data)
+{
+	assert(q);
+	if(NULL == q->_pHead)
+	{
+		q->_pHead = q->_pTail = BuyNode(data);
+		return;
+	}
+	q->_pTail->_Pnext = BuyNode(data);    //这里很重要
+	q->_pTail = q->_pTail->_Pnext;
+}
+
+//队列头删
+void QueuePop(Queue *q)
+{
+	assert(q);
+	if(NULL == q->_pHead)
+	{
+		printf("队列元素为空,无元素可删!!!\n");
+		return;
+	}
+	else
+	{
+		pNode pDel = q->_pHead;    
+		q->_pHead = q->_pHead->_Pnext;  
+		   if(q->_pTail == pDel) q->_pTail = q->_pHead; //当删除的元素是最后一个元素,要让尾指针指向头指针
+		free(pDel);     //pDel不需要再指向NULL;因为本来就是临时变量，调用完函数自动销毁
+	}
+}
+
+//判断队列是否为空
+int QueueEmpty(Queue *q)
+{
+	assert(q);
+	return NULL == q->_pHead;
+}
+
+//队列的大小
+int QueueSize(Queue *q)
+{
+	pNode pCur = q->_pHead;
+	int count = 0;
+	assert(q);
+	while(pCur)
+	{
+		++count;
+		pCur = pCur->_Pnext;
+	}
+	return count;
+}
+
+//队头元素
+DataType Queuefront(Queue *q)
+{
+	assert(q);
+	if(NULL == q->_pHead)
+	{
+		printf("队列为空,无队头元素!!!\n");
+		assert(0);
+	}
+	return q->_pHead->_data;
+}
+
+//队尾元素
+DataType Queueback(Queue *q)
+{
+	assert(q);
+	if(NULL == q->_pTail)
+	{
+		printf("队列为空无队尾元素!!!\n");
+		assert(0);
+	}
+	return q->_pTail->_data;
+}
+
+//新建一个结点
+pNode BuyNode(DataType data)
+{
+	pNode pCur = (pNode)malloc(sizeof(Node));
+	if(NULL == pCur)
+	{
+		printf("结点申请失败!!!\n");
+		assert(0);
+	}
+	pCur->_data = data;
+	pCur->_Pnext = NULL;
+	return pCur;
+}
+
+//判断队列销毁
+void QueueDestroy(Queue *q)
+{
+	pNode pCur = q->_pHead;
+	assert(q);
+	while(pCur)
+	{
+		pCur = pCur->_Pnext;
+		free(q->_pHead);
+		q->_pHead = pCur;
+	}
+	q->_pTail = NULL;
+}
