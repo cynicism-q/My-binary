@@ -1,0 +1,97 @@
+//编译环境VS2008
+Stack.h
+
+#pragma once
+
+#include <assert.h>
+#include <stdio.h>
+
+//由于使用到Queue.h的内容 BTNode,所以包含头文件,(查看二叉树的队列)
+#include "Queue.h"
+
+typedef BTNode* S_DataType;  
+#define MAX_SIZE 10
+
+typedef struct Stact
+{
+	S_DataType _array[MAX_SIZE];
+	int _size;
+}Stack;
+
+
+//栈的初始化
+void StackInit(Stack *s);
+
+//元素入栈
+void StackPush(Stack *s,S_DataType data);
+
+//出栈
+void StackPop(Stack *s);
+
+//栈顶元素
+DataType StackTop(Stack *s);
+
+//栈元素的个数
+int StackSize(Stack * s);
+
+//判断栈是否为空
+int StackEmpty(Stack * s);
+
+
+Stack.c
+
+#include "Stack.h"
+
+void StackInit(Stack * s)
+{
+	assert(s);
+	s->_size = 0;
+}
+
+void StackPush(Stack *s,S_DataType data)
+{
+	assert(s);
+	if(s->_size == MAX_SIZE)
+	{
+		printf("栈已满,不能入元素!!!\n");
+		return;
+	}
+	s->_array[s->_size++] = data;
+
+
+}
+
+void StackPop(Stack *s)
+{
+	assert(s);
+	if(StackEmpty(s))
+	{
+		printf("栈以空,不能出元素!!!\n");
+		return;
+	}
+	--s->_size;
+	
+}
+
+S_DataType StackTop(Stack *s)
+{
+	assert(s);
+	if(MAX_SIZE == 0)
+	{
+		printf("栈为空,无栈顶元素!!!\n");
+		assert(0);
+	}
+	return s->_array[s->_size-1];
+}
+
+int StackSize(Stack * s)
+{
+	assert(s);
+	return s->_size;
+}
+
+int StackEmpty(Stack * s)
+{
+	assert(s);
+	return 0 == s->_size;
+}
