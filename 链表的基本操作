@@ -1,0 +1,435 @@
+编译环境 VS2008
+
+//Slinklist.h
+
+#pragma once
+
+#include <stdio.h>
+#include <assert.h>
+#include <malloc.h>
+
+typedef int DataType;
+
+typedef struct ListNode
+{
+	struct ListNode *pNode;
+	DataType _data;
+}Node,*PNode;
+
+//初始化
+void SlistInit(PNode* ppHead);
+
+//尾插
+void SListPushBack(PNode * ppHead,DataType data);
+
+//尾删
+void SListpopBack(PNode* ppHead);
+
+//头插
+void SListPushFront(PNode* ppHead,DataType data);
+
+//头删
+void SListPopFront(PNode* ppHead);
+
+// 在链表中查找值为data的元素，找到后返回值为data的结点
+PNode SListFind(PNode pHead, DataType data);
+
+
+// 在pos位置插入值为data的结点
+void SListInsert(PNode pHead, PNode pos, DataType data);
+
+//删除一个节点
+void SListErase(PNode* pHead, PNode pos);
+
+//计算链表长度
+int SListSize(PNode pHead);
+
+// 判断链表是否为空
+int SListEmpty(PNode pHead);
+
+// 销毁链表
+void SListDestroy(PNode* pHead); 
+
+//新建一个节点
+PNode BuyListNode(DataType data);
+
+//打印链表内容
+void Slistprint(PNode pHead);
+
+//Slinklist.c
+
+
+#include "Slinklist.h"
+
+//初始化
+void SlistInit(PNode* ppHead)
+{
+	assert(ppHead);
+
+	*ppHead = NULL;
+}
+
+//尾插
+void SListPushBack(PNode* ppHead,DataType data)
+{
+	assert(ppHead);
+
+	if(*ppHead == NULL)
+	{
+		*ppHead = BuyListNode(data);
+		return;
+	}
+	else if(*ppHead != NULL)
+	{
+		PNode pCur = *ppHead;  //当第一次执行到这里的时候，将头指针的指向赋给了pCur,即pCur指向第一个节点
+		while(pCur->pNode)     //当时这里的没有把头指针的指向赋给一个变量，直接使用头指针进行遍历，最后
+		{						//导致头指针的指向发生了改变，最后头指针指向的是倒数第二个元素，所以链表里只会显示两个元素
+
+			pCur=pCur->pNode;  //*ppHead->pNode指向不成功是因为没有考虑优先级的问题，->的优先级高于*
+		}
+		pCur->pNode = BuyListNode(data);
+	}
+}
+
+//尾删   分为三种情况
+void SListpopBack(PNode* ppHead)
+{
+	assert(ppHead);
+	if(*ppHead == NULL)
+		printf("链表为空无数据可删!!!\n");
+	else if((*ppHead)->pNode == NULL)
+		*ppHead = NULL;
+	else
+	{
+		PNode pCur = *ppHead;
+		PNode pPre = *ppHead;
+		while(pCur->pNode)
+		{
+			pPre = pCur;
+			pCur = pCur->pNode;
+		}                        //跳出循环pPre指向倒数第二个结点
+		pPre->pNode = NULL;      
+	}
+}
+
+//头插
+void SListPushFront(PNode* ppHead,DataType data)
+{
+	assert(ppHead);
+	if(*ppHead == NULL)
+	{
+		*ppHead = BuyListNode(data);
+	}
+	else 
+	{
+		PNode pCur = BuyListNode(data);
+		pCur->pNode =*ppHead;
+		*ppHead = pCur;
+	}
+}
+
+//头删
+void SListPopFront(PNode* ppHead)
+{
+	assert(ppHead);
+	if((*ppHead) == NULL)
+	{
+		printf("链表为空,不能头删!!!\n");
+	}
+	else 
+	{
+		PNode pCur = (*ppHead)->pNode;
+		free(*ppHead);
+		*ppHead = pCur;
+	}
+}
+
+// 在链表中查找值为data的元素，找到后返回值为data的结点
+PNode SListFind(PNode pHead, DataType data)
+{
+	if(pHead == NULL)
+	{
+	
+		printf("链表为空，无数据可查!");
+		return NULL;
+	}
+	else
+	{
+		while(pHead)
+		{
+			if(pHead->_data == data)
+			{
+				return pHead;
+			}
+			pHead = pHead->pNode; 
+		}
+		return NULL;
+#if 0
+		PNode pCur = pHead;     //由于只需要遍历一次链表所以不需要创建变量
+		while(pCur->_data != data && pCur->pNode != NULL)   //次方法有些繁琐使用上一个方法
+		{
+			pCur = pCur->pNode;	
+		}
+		if(pCur->_data == data)
+			return pCur;
+		else return NULL;
+#endif
+	}
+}
+
+// 在pos位置插入值为data的结点
+void SListInsert(PNode pHead, PNode pos, DataType data)
+{
+	PNode pCur;
+	int ret;
+	if(pHead == NULL || pos == NULL)
+	{
+		printf("链表为空或所插位置为空，无处可插!!!\n");
+	}
+	else
+	{
+		pCur = BuyListNode(data);
+		pCur->pNode = pos->pNode;
+		pos->pNode = pCur;
+		ret = pos->_data;                 //如果加当前位置的后面去掉这三行代码
+		pos->_data = pos->pNode->_data;
+		pos->pNode->_data = ret;
+	}
+}
+
+// 删除pos位置的结点
+void SListErase(PNode* pHead, PNode pos)
+{
+	PNode pDel = *pHead;
+	assert(pHead);
+	if(*pHead == NULL || pos == NULL)
+	{
+		printf("链表为空或插入位置为空,不能删除!!!\n");
+	}
+	else if(*pHead == pos)  //删除第一个节点
+	{
+		*pHead = (*pHead)->pNode;
+		free(pDel);
+		pDel = NULL;
+		
+	}
+	else
+	{
+		while(pDel->pNode != pos && pDel->pNode)
+		{
+			pDel = pDel->pNode;
+		}
+		if(pDel->pNode == pos)
+		{
+			pDel->pNode = pos->pNode;
+			free(pos);
+			pos = NULL;
+		}
+	}
+}
+
+#if 0
+void SListErase(PNode* pHead, PNode pos)
+{
+	PNode pCur = *pHead;
+	PNode pPre;
+	assert(pHead);
+	if(*pHead == NULL || pos == NULL)
+	{
+		printf("链表为空或位置为空，无结点可删!!!\n");
+		return;
+	}	
+	if(pos == pCur)
+	{
+		pCur = pCur->pNode;
+		free(*pHead);
+		*pHead = pCur;
+	}
+	while(pCur != pos && pCur != NULL)
+	{
+		pPre = pCur;
+		pCur = pCur->pNode;
+	}
+	if(pCur == pos)
+	{
+		pPre->pNode = pos->pNode;
+		free(pCur);
+		pCur = NULL;
+		pos  = NULL;
+	}
+}
+#endif
+
+//计算链表长度
+int SListSize(PNode pHead)
+{
+	int count = 0;
+	while(pHead)
+	{
+		++count;
+		pHead = pHead->pNode;
+	}
+	return count;
+}
+
+// 判断链表是否为空
+int SListEmpty(PNode pHead)
+{
+	return pHead != NULL;
+}
+
+// 销毁链表
+void SListDestroy(PNode* pHead)
+{
+	PNode pCur = *pHead;
+	assert(pHead);
+	while(pCur)
+	{
+		pCur = pCur->pNode;      //指向错误是
+		free(*pHead);
+			*pHead = pCur;
+	}
+	//*pHead = NULL;           //不需要这一步，因为循环最会一步就是执行的这一步
+}
+
+//打印链表
+void Slistprint(PNode pHead)
+{
+	PNode pCur = pHead;
+	if(pHead == NULL)
+	{
+		printf("   \n");
+		return;
+	}
+	printf("链表中的元素为:");
+	while(pCur)
+	{
+		printf("%d->",pCur->_data);
+		pCur = pCur->pNode;
+	}
+	printf("NULL\n");
+}
+
+//新建一个节点
+PNode BuyListNode(DataType data)
+{
+	PNode pNewNode =(PNode)malloc(sizeof(Node));
+	if(pNewNode == NULL)
+	{
+		assert(0);
+		return NULL;
+	}
+	pNewNode->_data = data;  //指向不成功，原因头文件包含使用的是尖括号，更改完尽量编译一下
+	pNewNode->pNode = NULL;
+	return pNewNode;
+}
+
+//test.c
+
+#define _CRT_SECURE_NO_WARNINGS 1
+
+#include "Slinklist.h"
+#include "mianshi.h"
+
+//链表尾插、尾删、头插、头删
+void test1();
+
+void test2();
+
+//链表逆序打印，删除一个确定的元素，在一个元素前面添加一个元素
+void test3();
+
+int main()
+{
+	test1();
+	test2();
+	test3();
+	return 0;
+}
+
+void test3()
+{
+	PNode pHead = NULL;
+	SlistInit(&pHead);
+	SListPushBack(&pHead,1);
+	SListPushBack(&pHead,2);
+	SListPushBack(&pHead,3);
+	SListPushBack(&pHead,4);
+	SListPushBack(&pHead,5);
+	SListPushBack(&pHead,6);
+
+	Slistprint(pHead);
+	PrintSListFromTail2Head(pHead);           //逆序打印
+
+	DeleteListNotTailNode(pHead,SListFind(pHead,2));   //删除元素2
+	printf("\n");
+	Slistprint(pHead);
+
+	InesrtPosFront(SListFind(pHead,4),1);         //在元素4前面加1
+	Slistprint(pHead);
+}
+
+
+//在某位置删除元素或插入元素，获取链表的长度
+void test2()
+{
+	PNode pHead = NULL;
+	SlistInit(&pHead);
+	SListPushBack(&pHead,1);
+    SListPushBack(&pHead,2);
+	SListPushBack(&pHead,3);
+
+	printf("%d\n",(SListFind(pHead,3))->_data);  //打印3
+
+	SListInsert(pHead,SListFind(pHead,1),88);   //在数据1的前面插入数据88并打印
+	Slistprint(pHead);
+                                                 
+	SListErase(&pHead,SListFind(pHead,2));      //删除元素2
+	Slistprint(pHead);
+
+	printf("链表的长度%d\n",SListSize(pHead)); //打印链表的长度
+
+	printf("链表是否为空%d\n",SListEmpty(pHead));  //判断链表是否为空，打印0为空1不为空
+
+	SListDestroy(&pHead);                         //销毁链表
+
+	Slistprint(pHead);
+}
+
+//链表尾插、尾删、头插、头删
+void test1()
+{
+	PNode pHead = NULL;   //定义一个节点指针，指向空
+	SlistInit(&pHead);
+	SListPushBack(&pHead,1);
+	SListPushBack(&pHead,2);
+	SListPushBack(&pHead,3);
+	Slistprint(pHead);       //尾插三个数并且打印
+
+	SListpopBack(&pHead);   //尾删一个数并打印连续删除四次
+	Slistprint(pHead);
+	SListpopBack(&pHead);
+	Slistprint(pHead);
+	SListpopBack(&pHead);
+	Slistprint(pHead);
+	SListpopBack(&pHead);
+	Slistprint(pHead);
+
+	SListPushFront(&pHead,5);  //头插一个数据并且打印，三次
+	Slistprint(pHead);
+	SListPushFront(&pHead,6);
+	Slistprint(pHead);
+	SListPushFront(&pHead,7);
+	Slistprint(pHead);
+
+	SListPopFront(&pHead);   //头删一个数据并且打印，四次
+	Slistprint(pHead);
+	SListPopFront(&pHead);
+	Slistprint(pHead);
+	SListPopFront(&pHead);
+	Slistprint(pHead);
+	SListPopFront(&pHead);
+	Slistprint(pHead);
+
+	SListDestroy(&pHead);      //销毁链表
+}
