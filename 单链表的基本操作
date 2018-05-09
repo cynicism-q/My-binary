@@ -387,7 +387,7 @@ void test2()
 
 	printf("链表的长度%d\n",SListSize(pHead)); //打印链表的长度
 
-	printf("链表是否为空%d\n",SListEmpty(pHead));  //判断链表是否为空，打印0为空1不为空
+	printf("链表是否为空%d\n ",SListEmpty(pHead));  //判断链表是否为空，打印0为空1不为空
 
 	SListDestroy(&pHead);                         //销毁链表
 
