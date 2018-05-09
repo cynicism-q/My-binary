@@ -1,7 +1,3 @@
-编译环境 VS2008
-
-//Slinklist.h
-
 #pragma once
 
 #include <stdio.h>
@@ -12,7 +8,7 @@ typedef int DataType;
 
 typedef struct ListNode
 {
-	struct ListNode *pNode;
+	struct ListNode *pNext;
 	DataType _data;
 }Node,*PNode;
 
@@ -58,6 +54,7 @@ void Slistprint(PNode pHead);
 
 //Slinklist.c
 
+#define _CRT_SECURE_NO_WARNINGS 1
 
 #include "Slinklist.h"
 
@@ -82,12 +79,12 @@ void SListPushBack(PNode* ppHead,DataType data)
 	else if(*ppHead != NULL)
 	{
 		PNode pCur = *ppHead;  //当第一次执行到这里的时候，将头指针的指向赋给了pCur,即pCur指向第一个节点
-		while(pCur->pNode)     //当时这里的没有把头指针的指向赋给一个变量，直接使用头指针进行遍历，最后
+		while(pCur->pNext)     //当时这里的没有把头指针的指向赋给一个变量，直接使用头指针进行遍历，最后
 		{						//导致头指针的指向发生了改变，最后头指针指向的是倒数第二个元素，所以链表里只会显示两个元素
 
-			pCur=pCur->pNode;  //*ppHead->pNode指向不成功是因为没有考虑优先级的问题，->的优先级高于*
+			pCur=pCur->pNext;  //*ppHead->pNext指向不成功是因为没有考虑优先级的问题，->的优先级高于*
 		}
-		pCur->pNode = BuyListNode(data);
+		pCur->pNext = BuyListNode(data);
 	}
 }
 
@@ -97,18 +94,18 @@ void SListpopBack(PNode* ppHead)
 	assert(ppHead);
 	if(*ppHead == NULL)
 		printf("链表为空无数据可删!!!\n");
-	else if((*ppHead)->pNode == NULL)
+	else if((*ppHead)->pNext == NULL)
 		*ppHead = NULL;
 	else
 	{
 		PNode pCur = *ppHead;
 		PNode pPre = *ppHead;
-		while(pCur->pNode)
+		while(pCur->pNext)
 		{
 			pPre = pCur;
-			pCur = pCur->pNode;
+			pCur = pCur->pNext;
 		}                        //跳出循环pPre指向倒数第二个结点
-		pPre->pNode = NULL;      
+		pPre->pNext = NULL;      
 	}
 }
 
@@ -123,7 +120,7 @@ void SListPushFront(PNode* ppHead,DataType data)
 	else 
 	{
 		PNode pCur = BuyListNode(data);
-		pCur->pNode =*ppHead;
+		pCur->pNext =*ppHead;
 		*ppHead = pCur;
 	}
 }
@@ -138,7 +135,7 @@ void SListPopFront(PNode* ppHead)
 	}
 	else 
 	{
-		PNode pCur = (*ppHead)->pNode;
+		PNode pCur = (*ppHead)->pNext;
 		free(*ppHead);
 		*ppHead = pCur;
 	}
@@ -161,14 +158,14 @@ PNode SListFind(PNode pHead, DataType data)
 			{
 				return pHead;
 			}
-			pHead = pHead->pNode; 
+			pHead = pHead->pNext; 
 		}
 		return NULL;
 #if 0
 		PNode pCur = pHead;     //由于只需要遍历一次链表所以不需要创建变量
-		while(pCur->_data != data && pCur->pNode != NULL)   //次方法有些繁琐使用上一个方法
+		while(pCur->_data != data && pCur->pNext != NULL)   //次方法有些繁琐使用上一个方法
 		{
-			pCur = pCur->pNode;	
+			pCur = pCur->pNext;	
 		}
 		if(pCur->_data == data)
 			return pCur;
@@ -189,11 +186,11 @@ void SListInsert(PNode pHead, PNode pos, DataType data)
 	else
 	{
 		pCur = BuyListNode(data);
-		pCur->pNode = pos->pNode;
-		pos->pNode = pCur;
+		pCur->pNext = pos->pNext;
+		pos->pNext = pCur;
 		ret = pos->_data;                 //如果加当前位置的后面去掉这三行代码
-		pos->_data = pos->pNode->_data;
-		pos->pNode->_data = ret;
+		pos->_data = pos->pNext->_data;
+		pos->pNext->_data = ret;
 	}
 }
 
@@ -208,20 +205,20 @@ void SListErase(PNode* pHead, PNode pos)
 	}
 	else if(*pHead == pos)  //删除第一个节点
 	{
-		*pHead = (*pHead)->pNode;
+		*pHead = (*pHead)->pNext;
 		free(pDel);
 		pDel = NULL;
 		
 	}
 	else
 	{
-		while(pDel->pNode != pos && pDel->pNode)
+		while(pDel->pNext != pos && pDel->pNext)
 		{
-			pDel = pDel->pNode;
+			pDel = pDel->pNext;
 		}
-		if(pDel->pNode == pos)
+		if(pDel->pNext == pos)
 		{
-			pDel->pNode = pos->pNode;
+			pDel->pNext = pos->pNext;
 			free(pos);
 			pos = NULL;
 		}
@@ -241,18 +238,18 @@ void SListErase(PNode* pHead, PNode pos)
 	}	
 	if(pos == pCur)
 	{
-		pCur = pCur->pNode;
+		pCur = pCur->pNext;
 		free(*pHead);
 		*pHead = pCur;
 	}
 	while(pCur != pos && pCur != NULL)
 	{
 		pPre = pCur;
-		pCur = pCur->pNode;
+		pCur = pCur->pNext;
 	}
 	if(pCur == pos)
 	{
-		pPre->pNode = pos->pNode;
+		pPre->pNext = pos->pNext;
 		free(pCur);
 		pCur = NULL;
 		pos  = NULL;
@@ -267,7 +264,7 @@ int SListSize(PNode pHead)
 	while(pHead)
 	{
 		++count;
-		pHead = pHead->pNode;
+		pHead = pHead->pNext;
 	}
 	return count;
 }
@@ -285,7 +282,7 @@ void SListDestroy(PNode* pHead)
 	assert(pHead);
 	while(pCur)
 	{
-		pCur = pCur->pNode;      //指向错误是
+		pCur = pCur->pNext;      //指向错误是
 		free(*pHead);
 			*pHead = pCur;
 	}
@@ -305,7 +302,7 @@ void Slistprint(PNode pHead)
 	while(pCur)
 	{
 		printf("%d->",pCur->_data);
-		pCur = pCur->pNode;
+		pCur = pCur->pNext;
 	}
 	printf("NULL\n");
 }
@@ -320,9 +317,10 @@ PNode BuyListNode(DataType data)
 		return NULL;
 	}
 	pNewNode->_data = data;  //指向不成功，原因头文件包含使用的是尖括号，更改完尽量编译一下
-	pNewNode->pNode = NULL;
+	pNewNode->pNext = NULL;
 	return pNewNode;
 }
+
 
 //test.c
 
