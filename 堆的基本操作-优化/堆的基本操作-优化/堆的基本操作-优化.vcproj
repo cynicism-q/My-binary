@@ -2,9 +2,9 @@
 <VisualStudioProject
 	ProjectType="Visual C++"
 	Version="9.00"
-	Name="堆的基本操作"
-	ProjectGUID="{D95CB5B3-527E-4320-AD58-DC95D263058C}"
-	RootNamespace="堆的基本操作"
+	Name="堆的基本操作-优化"
+	ProjectGUID="{27908F20-DBBE-41C7-AE2A-B02157906F31}"
+	RootNamespace="堆的基本操作优化"
 	TargetFrameworkVersion="196613"
 	>
 	<Platforms>
