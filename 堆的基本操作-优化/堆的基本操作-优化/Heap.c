@@ -50,7 +50,7 @@ void AdjustDown(Heap * hp,int parent)
 		{
 			swap(&hp->_array[parent],&hp->_array[child]);
 			parent = child;
-			child = (parent+1) << 1;
+			child = (parent << 1) + 1;
 		}	
 		else
 		{
